@@ -1,57 +1,50 @@
-#include <iosteam>
+#include <iostream>
 #include <string>
+#include "printHelper.hh"
 using namespace std;
 
 class Solution {
     public:
         vector<string> fullJustify(vector<string>& words, int maxWidth) {
             vector<string> res;
-            if (words.empty())
-                return res;
-            int start = 0;
-            int wordsWidth = 0;
-            for (int i=1; i<=words.size(); i++) {
-                //space nums
-                spacesWidth = i - start - 1;
-                //
-                wordsWidth += words[i-1].size();
-                if (wordsWidth+spacesWidth>maxWidth) {
-                    join(words, start, i, wordsWidth, maxWidth, res);
-                    start = i;
-                    wordsWidth = words[i].size();
-
-
+            int begin = 0;
+            while (begin < words.size()) {
+                int last = begin;
+                int lineSize = words[begin].size();
+                begin++;
+                while (begin<words.size() && lineSize+1+words[begin].size()<=maxWidth) {
+                    lineSize += 1 + words[begin].size();
+                    begin++;
                 }
-            }
-
-            
-
-
-        }
-
-        string join(vector<string>& words, int start, int end, int wordsWidth, int maxWidth, vector<string>& res) {
-            int width = (maxWidth-wordsWidth)/(end-start);
-            int leadNum = (maxWidth-wordsWidth)%(end-start);
-            int spaces = string(width, ' ');
-            stringstream ss;
-            for (int i=start; i<end-1; i++) {
-                ss << words[i] << spaces;
-                if (leadNum>0) {
-                    ss << " ";
-                    leadNum--;
+                int spaces = 1, extra = 0;
+                if (begin<words.size() && begin!=last+1) {
+                    spaces = (maxWidth - lineSize) / (begin - last -1)+1;
+                    extra = (maxWidth - lineSize) % (begin - last - 1);
                 }
+
+                res.push_back(words[last]);
+                last++;
+                while (extra) {
+                    res.back().append(spaces+1, ' ');
+                    res.back().append(words[last]);
+                    last++;
+                    extra--;
+                }
+                while (last<begin) {
+                    res.back().append(spaces, ' ');
+                    res.back().append(words[last]);
+                    last++;
+                }
+                res.back().append(maxWidth-res.back().size(), ' ');
             }
-            ss << words.back();
-            if (end-start==1)
-                ss << spaces;
-            string res;
-            ss >> res;
             return res;
         }
+
 };
 
 int main(void) {
     Solution sl;
     vector<string> vec{"This", "is", "an", "example", "of", "text", "justification."};
-    printVec(sl.fullJustify(vec,16));
+    vector<string> res = sl.fullJustify(vec,16);
+    printVec(res);
 }
