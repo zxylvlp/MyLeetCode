@@ -1,4 +1,5 @@
 #include <vector>
+#include "TreeNode.hh"
 using namespace std;
 class Solution {
     public:
@@ -21,14 +22,14 @@ class Solution {
                 for (int j=0; j<left.size(); j++) {
                     for (int k=0; k<right.size(); k++) {
                         TreeNode* root = new TreeNode(i);
-                        root.left = left[i];
-                        root.right = right[j];
+                        root->left = left[i];
+                        root->right = right[j];
                         res.push_back(root);
                     }
                 }
 
             }
-
+            return res;
         }
 };
 
