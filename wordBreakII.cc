@@ -1,52 +1,39 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 #include <algorithm>
 #include <iostream>
 using namespace std;
 class Solution {
 public:
-    vector<string> wordBreak(string s, unordered_set<string>& wordDict) {
-        vector<string> res;
-        if (s=="") {
-            res.push_back("");
-            return res;
+    unordered_map<string, vector<string>> m;
+
+    vector<string> combine(string word, vector<string> prev) {
+        for (int i=0; i<prev.size(); i++) {
+            prev[i] += " " + word;
         }
-        int maxL = 0;
-        for (auto it=wordDict.begin(); it!=wordDict.end(); it++) {
-            maxL = max(maxL, int(it->size()));
-        }
-        vector<vector<bool>> mat(s,vecotr<bool>(s.size(), false));
-        for (int i=0; i<s.size(); i++) {
-            for (int j=i; j<s.size(); j++) {
-                if (wordDict.find(s.substr(i,j-i+1))!=wordDict.end()) {
-                    mat[i][j] = true;
-                }
-            }
-        }
-        res = wordBreakRe(s, wordDict, maxL, mat);
-        return res; 
+        return prev;
     }
 
-    vector<string> wordBreakRe(string s, unordered_set<string>& wordDict, int maxL, vecot<vector<bool>> &mat) {
+    vector<string> wordBreak(string s, unordered_set<string>& dict) {
+        if (m.count(s))
+            return m[s];
         vector<string> res;
-        int n = min(maxL, int(s.size()));
-        for (int i=1; i<=n; i++) {
-            string prefix = s.substr(0, i);
-            if (find(prefix)!=wordDict.end()) {
-                if (i==s.size()) {
-                    res.push_back(prefix);
-                    return res;
-                }
-                auto res_ = wordBreakRe(s.substr(i), wordDict, maxL);
-                for (int j=0; j<res_.size(); j++) {
-                    res.push_back(prefix + " " + res_[j]);
-                }
+        if (dict.count(s)) {
+            res.push_back(s);
+        }
+        for (int i=1; i<s.size(); i++) {
+            string word=s.substr(i);
+            if (dict.count(word)) {
+                string rem = s.substr(0, i);
+                vector<string> prev = combine(word, wordBreak(rem, dict));
+                res.insert(res.end(), prev.begin(), prev.end());
             }
         }
+        m[s] = res;
         return res; 
     }
-
 };
 int main(void) {
     Solution sl;
